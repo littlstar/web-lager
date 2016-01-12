@@ -1,6 +1,6 @@
 {
   "name": "web-lager",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Web server logging with s3 integration",
   "main": "index.js",
   "author": "Wells Johnston",
