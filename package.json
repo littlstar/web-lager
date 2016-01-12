@@ -4,5 +4,14 @@
   "description": "Web server logging with s3 integration",
   "main": "index.js",
   "author": "Wells Johnston",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "node test"
+  },
+  "devDependencies": {
+    "tape": "^4.4.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.2.28"
+  }
 }
