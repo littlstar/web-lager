@@ -114,18 +114,21 @@ class Lager {
 
   transport(level, entries) {
     var timestamp = new Date().toJSON();
-    var entry = [timestamp, level.toUpperCase(), entries.join(' ')].join('\t');
     if (!this.isEnabled(level)) {
       return;
     }
     entries = entries.map(e => {
       return typeof e == 'object' ? JSON.stringify(e, null, 2) : e;
     });
+    var entry = [timestamp, level.toUpperCase(), entries.join(' ')].join('\t');
+
+    // send log to stdout / stderr
     if (level == 'log' || level == 'info' || level == 'debug') {
       console.log(entry);
     } else if (level == 'warn' || level == 'error') {
       console.error(entry);
     }
+
     this.transports.forEach(t => {
       t.log(level, entry);
     });
