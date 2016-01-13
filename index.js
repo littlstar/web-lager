@@ -6,6 +6,7 @@
 
 'use strict'
 
+const morgan = require('morgan');
 const S3Transport = require('./lib/S3Transport');
 const levels = ['log', 'info', 'warn', 'debug', 'error'];
 
@@ -28,6 +29,10 @@ class Lager {
         }
       });
     }
+  }
+
+  access() {
+    return morgan('combined');
   }
 
   /**
