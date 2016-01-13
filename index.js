@@ -9,7 +9,7 @@
 const morgan = require('morgan');
 const through = require('through');
 const S3Transport = require('./lib/S3Transport');
-const levels = ['access', 'log', 'info', 'warn', 'debug', 'error'log];
+const levels = ['access', 'log', 'info', 'warn', 'debug', 'error'];
 
 class Lager {
 
@@ -34,9 +34,9 @@ class Lager {
 
     var self = this;
     this.accessStream = through(function(line) {
-      if (line != null) {
-        this.push(line);
-        self.access(line);
+      if (line != null && line[0] != null) {
+        this.push(line.trim());
+        self.access(line.trim());
       }
     });
   }
@@ -151,7 +151,7 @@ class Lager {
     var entry = [timestamp, level.toUpperCase(), entries.join(' ')].join('\t');
 
     // send log to stdout / stderr
-    if (level == 'log' || level == 'info' || level == 'debug') {
+    if (level == 'access' || level == 'log' || level == 'info' || level == 'debug') {
       console.log(entry);
     } else if (level == 'warn' || level == 'error') {
       console.error(entry);
