@@ -84,9 +84,8 @@ class Lager {
    * @param {...*} args Any number of arguments of any type to be logged
    */
 
-  access() {
-    let args = Array.prototype.slice.call(arguments);
-    this.transport('access', args);
+  access(accessLog) {
+    this.transport('access', accessLog);
   }
 
   /**
@@ -141,7 +140,6 @@ class Lager {
    */
 
   transport(level, entries) {
-    var timestamp = new Date().toJSON();
     var entry;
 
     if (!this.isEnabled(level)) {
@@ -149,6 +147,7 @@ class Lager {
     }
 
     if (level != 'access') {
+      let timestamp = new Date().toJSON();
       entries = entries.map(e => {
         return typeof e == 'object' ? JSON.stringify(e, null, 2) : e;
       });
