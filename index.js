@@ -7,8 +7,9 @@
 'use strict'
 
 const morgan = require('morgan');
+const through = require('through');
 const S3Transport = require('./lib/S3Transport');
-const levels = ['log', 'info', 'warn', 'debug', 'error'];
+const levels = ['access', 'log', 'info', 'warn', 'debug', 'error'log];
 
 class Lager {
 
@@ -22,6 +23,7 @@ class Lager {
   constructor(opts) {
     this.levels = opts.levels || levels;
     opts.transports = opts.transports || [];
+
     if (opts.transports != null) {
       this.transports = opts.transports.map(opts => {
         if (opts.type == 's3') {
@@ -29,10 +31,22 @@ class Lager {
         }
       });
     }
+
+    var self = this;
+    this.accessStream = through(function(line) {
+      if (line != null) {
+        this.push(line);
+        self.access(line);
+      }
+    });
   }
 
-  access() {
-    return morgan('combined');
+  /**
+   * Enables access logging middleware for Express.
+   */
+
+  accessLogMiddleware() {
+    return morgan('combined', { stream: this.accessStream });
   }
 
   /**
@@ -64,6 +78,15 @@ class Lager {
 
   isEnabled(level) {
     return this.levels.indexOf(level) >= 0;
+  }
+
+  /**
+   * @param {...*} args Any number of arguments of any type to be logged
+   */
+
+  access() {
+    let args = Array.prototype.slice.call(arguments);
+    this.transport('access', args);
   }
 
   /**
