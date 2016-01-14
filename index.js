@@ -25,9 +25,10 @@ class Lager {
     opts.transports = opts.transports || [];
 
     if (opts.transports != null) {
-      this.transports = opts.transports.map(opts => {
-        if (opts.type == 's3') {
-          return new S3Transport(opts);
+      this.transports = opts.transports.map(transportOpts => {
+        if (transportOpts.type == 's3') {
+          transportOpts.aws = transportOpts.aws || opts.aws || null;
+          return new S3Transport(transportOpts);
         }
       });
     }
@@ -84,17 +85,17 @@ class Lager {
    * @param {...*} args Any number of arguments of any type to be logged
    */
 
-  access(accessLog) {
-    this.transport('access', accessLog);
+  log() {
+    let args = Array.prototype.slice.call(arguments);
+    this.transport('log', args);
   }
 
   /**
    * @param {...*} args Any number of arguments of any type to be logged
    */
 
-  log() {
-    let args = Array.prototype.slice.call(arguments);
-    this.transport('log', args);
+  access(accessLog) {
+    this.transport('access', accessLog);
   }
 
   /**
