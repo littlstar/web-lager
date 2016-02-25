@@ -22,12 +22,14 @@ class Lager {
 
   constructor(opts) {
     this.levels = opts.levels || levels;
+    this.verbose = opts.verbose || false;
     opts.transports = opts.transports || [];
 
     if (opts.transports != null) {
       this.transports = opts.transports.map(transportOpts => {
         if (transportOpts.type == 's3') {
           transportOpts.aws = transportOpts.aws || opts.aws || null;
+          transportOpts.verbose = this.verbose;
           return new S3Transport(transportOpts);
         }
       });
