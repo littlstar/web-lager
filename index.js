@@ -6,10 +6,10 @@
 
 'use strict'
 
+const S3Transport = require('./lib/transports/s3');
+const levels = ['access', 'log', 'info', 'warn', 'debug', 'error'];
 const morgan = require('morgan');
 const through = require('through');
-const S3Transport = require('./lib/S3Transport');
-const levels = ['access', 'log', 'info', 'warn', 'debug', 'error'];
 
 class Lager {
 
@@ -24,7 +24,7 @@ class Lager {
     this.levels = opts.levels || levels;
     opts.transports = opts.transports || [];
 
-    if (opts.transports != null) {
+    if (opts.transports) {
       this.transports = opts.transports.map(transportOpts => {
         if (transportOpts.type == 's3') {
           transportOpts.aws = transportOpts.aws || opts.aws || null;
@@ -33,6 +33,7 @@ class Lager {
       });
     }
 
+    /* expose access logging read stream */
     var self = this;
     this.accessStream = through(function(line) {
       if (line != null && line[0] != null) {
@@ -158,9 +159,9 @@ class Lager {
     }
 
     /* send log to stdout or stderr */
-    if (level == 'access' || level == 'log' || level == 'info' || level == 'debug') {
+    if (['access', 'log', 'info', 'debug'].indexOf(level) > -1) {
       console.log(entry);
-    } else if (level == 'warn' || level == 'error') {
+    } else if (['warn', 'error'].indexOf(level) > -1) {
       console.error(entry);
     }
 
