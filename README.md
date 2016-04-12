@@ -1,21 +1,16 @@
 # web-lager
 
-General-purpose logger that supports multiple log levels and transports.  Express framework access logging is built in, which makes this an ideal server-side logger.
+General-purpose logger that supports multiple log levels and transports.  Express framework access logging is built in, which makes this an ideal server-side logger.  By default, all logs are sent to `stdout` or `stderr`.
 
 ### Install
 ```
 npm i web-lager --save
 ```
 
-
 ### Basic Usage
 Send logs to two different S3 buckets based on log level
 ```javascript
 var Logger = require('web-lager');
-var express = require('express');
-
-var app = express();
-app.use(log.accessLogMiddleware()); // enable access logging
 
 var transports = [{
   /* flushes access logs to s3 every minute */
@@ -33,7 +28,7 @@ var transports = [{
   frequency: '0 * * * *'  
 };
 
-var log = new Logger({
+var logger = new Logger({
   levels: ['log', 'info', 'warn', 'debug'], // support these top-level types
   transports: transports
 });
@@ -42,8 +37,15 @@ var log = new Logger({
 
 ### Express Logging
 Enable access logging in your Express server by calling `accessLogMiddleware`.
-```
-app.use(log.accessLogMiddleware());
+```javascript
+var express = require('express');
+var Logger = require('web-lager');
+
+var app = express();
+var logger = new Logger();
+
+/* enable access logging */
+app.use(logger.accessLogMiddleware()); 
 ```
 
 ### Supported Levels
