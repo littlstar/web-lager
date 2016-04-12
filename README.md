@@ -7,16 +7,15 @@ General-purpose logger that supports multiple log levels and transports.  Expres
 npm i web-lager --save
 ```
 
-### Express Logging
-Enable access logging in your Express server by calling `accessLogMiddleware`.
-```
-app.use(log.accessLogMiddleware());
-```
 
 ### Basic Usage
 Send logs to two different S3 buckets based on log level
 ```javascript
 var Logger = require('web-lager');
+var express = require('express');
+
+var app = express();
+app.use(log.accessLogMiddleware()); // enable access logging
 
 var transports = [{
   /* flushes access logs to s3 every minute */
@@ -39,6 +38,12 @@ var log = new Logger({
   transports: transports
 });
 
+```
+
+### Express Logging
+Enable access logging in your Express server by calling `accessLogMiddleware`.
+```
+app.use(log.accessLogMiddleware());
 ```
 
 ### Supported Levels
