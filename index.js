@@ -141,11 +141,9 @@ class Lager {
    */
 
   transport(level, entries) {
-    var entry;
 
-    if (!this.isEnabled(level)) {
-      return;
-    }
+    if (!this.isEnabled(level)) return;
+    let entry = null;
 
     if (level != 'access') {
       let timestamp = new Date().toJSON();
@@ -154,18 +152,19 @@ class Lager {
       });
       entry = [timestamp, level.toUpperCase(), entries.join(' ')].join('\t');
     } else {
-      // if it's an access log, it's already formatted
+
+      /* if it's an access log, it's already formatted */
       entry = entries;
     }
 
-    // send log to stdout / stderr
+    /* send log to stdout or stderr */
     if (level == 'access' || level == 'log' || level == 'info' || level == 'debug') {
       console.log(entry);
     } else if (level == 'warn' || level == 'error') {
       console.error(entry);
     }
 
-    // log to each of the transports
+    /* log to each of the transports */
     this.transports.forEach(t => {
       t.log(level, entry);
     });
