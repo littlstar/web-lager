@@ -35,7 +35,7 @@ var logger = new Logger({
 
 ```
 
-### Express Logging
+### Access Logging
 Enable access logging in your Express server by calling `accessLogMiddleware`.
 ```javascript
 var express = require('express');
