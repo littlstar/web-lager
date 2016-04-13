@@ -28,10 +28,10 @@ class Lager {
     }
 
     opts.transports = opts.transports || [];
-    this.transports = opts.transports.map(opts => {
-      if (opts.type == 's3') {
-        opts.aws = opts.aws || opts.aws || null;
-        return new S3Transport(opts);
+    this.transports = opts.transports.map(t => {
+      if (t.type == 's3') {
+        t.aws = opts.aws || null;
+        return new S3Transport(t);
       }
     });
 
