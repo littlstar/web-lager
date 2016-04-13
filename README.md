@@ -18,18 +18,17 @@ var transports = [{
   bucket: 'my-bucket',
   prefix: 'access/',
   levels: ['access-logs/'],
-  frequency: '* * * * *'  
+  frequency: '* * * * *'
 }, {
   /* flushes errors to s3 every hour */
   type: 's3',
   bucket: 'my-bucket',
   prefix: 'error-logs/',
   levels: ['error', 'warn'],
-  frequency: '0 * * * *'  
+  frequency: '0 * * * *'
 };
 
 var logger = new Logger({
-  levels: ['log', 'info', 'warn', 'debug'], // support these top-level types
   transports: transports
 });
 
@@ -40,12 +39,32 @@ Enable access logging in your Express server by calling `accessLogMiddleware`.
 ```javascript
 var express = require('express');
 var Logger = require('web-lager');
-
 var app = express();
+
 var logger = new Logger();
 
 /* enable access logging */
-app.use(logger.accessLogMiddleware()); 
+app.use(logger.accessLogger());
+```
+
+### Skip Access Logs
+```javascript
+var express = require('express');
+var Logger = require('web-lager');
+var app = express();
+
+var skips = (req, res) => {
+  return res.statusCode < 400
+}
+
+var config = {
+  access: {
+    skip: skips
+  }
+};
+
+var logger = new Logger(config);
+app.use(logger.accessLogger());
 ```
 
 ### Supported Levels

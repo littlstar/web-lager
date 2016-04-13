@@ -21,6 +21,12 @@ class Lager {
 
   constructor(opts) {
 
+    try {
+      this.skip = opts.access.skip;
+    } catch (e) {
+      this.skip = null;
+    }
+
     opts.transports = opts.transports || [];
     this.transports = opts.transports.map(opts => {
       if (opts.type == 's3') {
@@ -44,7 +50,11 @@ class Lager {
    */
 
   accessLogger() {
-    return morgan('combined', { stream: this.accessStream });
+    let opts = {
+      stream: this.accessStream,
+      skip: this.skip
+    };
+    return morgan('combined', opts);
   }
 
   /**
