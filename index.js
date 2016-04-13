@@ -112,7 +112,7 @@ class Lager {
 
     /* format log entry */
     let entry = null
-    if (!Array.isArray(entries)) {
+    if (Array.isArray(entries)) {
       entry = [new Date().toJSON(), level.toUpperCase(), entries.join(' ')].join('\t');
     } else {
       entry = entries; // already formatted
