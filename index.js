@@ -40,7 +40,7 @@ class Lager {
     this.accessStream = through(function(line) {
       if (line != null && line[0] != null) {
         this.push(line.trim());
-        self.access(line.trim());
+        self.transport('access', line.trim());
       }
     });
   }
@@ -111,8 +111,12 @@ class Lager {
   transport(level, entries) {
 
     /* format log entry */
-    entries = entries.map(e => typeof e == 'object' ? JSON.stringify(e, null, 2) : e);
-    let entry = [new Date().toJSON(), level.toUpperCase(), entries.join(' ')].join('\t');
+    let entry = null
+    if (!Array.isArray(entries)) {
+      entry = [new Date().toJSON(), level.toUpperCase(), entries.join(' ')].join('\t');
+    } else {
+      entry = entries; // already formatted
+    }
 
     /* send log to stdout or stderr */
     if (['access', 'log', 'info', 'debug'].indexOf(level) > -1) {
@@ -124,7 +128,6 @@ class Lager {
     /* log to each of the transports */
     this.transports.forEach(t => t.log(level, entry));
   }
-
 }
 
 module.exports = Lager;
