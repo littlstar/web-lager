@@ -16,22 +16,18 @@ class Lager {
   /**
    * @constructor
    * @param {Object} opts
-   * @param {Array} [opts.levels]
    * @param {Array} [opts.transports]
    */
 
   constructor(opts) {
-    this.levels = opts.levels || levels;
-    opts.transports = opts.transports || [];
 
-    if (opts.transports) {
-      this.transports = opts.transports.map(transportOpts => {
-        if (transportOpts.type == 's3') {
-          transportOpts.aws = transportOpts.aws || opts.aws || null;
-          return new S3Transport(transportOpts);
-        }
-      });
-    }
+    opts.transports = opts.transports || [];
+    this.transports = opts.transports.map(opts => {
+      if (opts.type == 's3') {
+        opts.aws = opts.aws || opts.aws || null;
+        return new S3Transport(opts);
+      }
+    });
 
     /* expose access logging read stream */
     var self = this;
@@ -47,39 +43,8 @@ class Lager {
    * Enables access logging middleware for Express.
    */
 
-  accessLogMiddleware() {
+  accessLogger() {
     return morgan('combined', { stream: this.accessStream });
-  }
-
-  /**
-   * Enables a log level.
-   * @param {String} level The logging level to enable.
-   */
-
-  enable(level) {
-    if (!this.isEnabled(level)) {
-      this.levels.push(level);
-    }
-  }
-
-  /**
-   * Disables a log level.
-   * @param {String} level The logging level to disable.
-   */
-
-  disable(level) {
-    while (this.isEnabled(level)) {
-      this.levels.splice(this.levels.indexOf(level), 1);
-    }
-  }
-
-  /**
-   * @param {String} level
-   * @return {Boolean} Whether the level is enabled on this instance.
-   */
-
-  isEnabled(level) {
-    return this.levels.indexOf(level) >= 0;
   }
 
   /**
@@ -89,14 +54,6 @@ class Lager {
   log() {
     let args = Array.prototype.slice.call(arguments);
     this.transport('log', args);
-  }
-
-  /**
-   * @param {...*} args Any number of arguments of any type to be logged
-   */
-
-  access(accessLog) {
-    this.transport('access', accessLog);
   }
 
   /**
@@ -143,20 +100,9 @@ class Lager {
 
   transport(level, entries) {
 
-    if (!this.isEnabled(level)) return;
-    let entry = null;
-
-    if (level != 'access') {
-      let timestamp = new Date().toJSON();
-      entries = entries.map(e => {
-        return typeof e == 'object' ? JSON.stringify(e, null, 2) : e;
-      });
-      entry = [timestamp, level.toUpperCase(), entries.join(' ')].join('\t');
-    } else {
-
-      /* if it's an access log, it's already formatted */
-      entry = entries;
-    }
+    /* format log entry */
+    entries = entries.map(e => typeof e == 'object' ? JSON.stringify(e, null, 2) : e);
+    let entry = [new Date().toJSON(), level.toUpperCase(), entries.join(' ')].join('\t');
 
     /* send log to stdout or stderr */
     if (['access', 'log', 'info', 'debug'].indexOf(level) > -1) {
@@ -166,9 +112,7 @@ class Lager {
     }
 
     /* log to each of the transports */
-    this.transports.forEach(t => {
-      t.log(level, entry);
-    });
+    this.transports.forEach(t => t.log(level, entry));
   }
 
 }

@@ -10,20 +10,6 @@ var webLager = require('./../');
 mocks3.config.basePath = __dirname + '/buckets/';
 var s3 = mocks3.S3();
 
-test('instantiation', t => {
-  var log = new webLager({
-    levels: ['log', 'info', 'warn', 'debug']
-  });
-
-  log.disable('warn');
-  log.disable('log');
-  log.disable('info');
-  log.enable('error');
-
-  t.ok(log.isEnabled('debug') && log.isEnabled('error'), 'levels');
-  t.end();
-});
-
 test('local transport', t => {
   var log = new webLager({
     levels: ['log', 'error'],
