@@ -17,7 +17,7 @@ var transports = [{
   type: 's3',
   bucket: 'my-bucket',
   prefix: 'access/',
-  levels: ['access-logs/'],
+  levels: ['access'],
   frequency: '* * * * *'
 }, {
   /* flushes errors to s3 every hour */
