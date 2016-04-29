@@ -13,14 +13,16 @@ Send logs to two different S3 buckets based on log level
 var Logger = require('web-lager');
 
 var transports = [{
-  /* flushes access logs to s3 every minute */
+
+  // flushes access logs to s3://my-bucket/access/ every minute
   type: 's3',
   bucket: 'my-bucket',
   prefix: 'access/',
   levels: ['access'],
   frequency: '* * * * *'
 }, {
-  /* flushes errors to s3 every hour */
+
+  // flushes errors to s3://my-bucket/error-logs/ every hour
   type: 's3',
   bucket: 'my-bucket',
   prefix: 'error-logs/',
@@ -34,32 +36,31 @@ var logger = new Logger({
 
 ```
 
-### Access Logging
+### Express Access Logging
 Enable access logging in your Express server by calling `accessLogMiddleware`.
 ```javascript
 var express = require('express');
 var Logger = require('web-lager');
 var app = express();
-
 var logger = new Logger();
 
-/* enable access logging */
+// enables access logging from Express
 app.use(logger.accessLogger());
 ```
 
 ### Skip Access Logs
+If you want to ignore certain access logs from Express (such as a health check),
+you can do so by defining a skip function in the config.
 ```javascript
 var express = require('express');
 var Logger = require('web-lager');
 var app = express();
 
-var skips = (req, res) => {
-  return res.statusCode < 400
-}
-
 var config = {
   access: {
-    skip: skips
+
+    // Example: skips logs that have a 400+ level status code
+    skip: (req, res) => res.statusCode < 400
   }
 };
 
