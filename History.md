@@ -1,4 +1,9 @@
 
+1.0.8 / 2016-05-27
+==================
+
+  * adding random hash to the end of files now to prevent collision
+
 1.0.7 / 2016-04-29
 ==================
 
