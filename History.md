@@ -1,4 +1,9 @@
 
+1.0.9 / 2016-05-31
+==================
+
+  * each instance of web-lager gets its own hash (better collision handling)
+
 1.0.8 / 2016-05-27
 ==================
 
